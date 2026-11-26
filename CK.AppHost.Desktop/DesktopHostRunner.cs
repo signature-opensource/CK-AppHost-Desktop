@@ -111,9 +111,9 @@ public abstract class DesktopHostRunner : IAppHostRunner
     /// <summary>
     /// Gets the title and the size of the window, before the host starts (the window opens at once).
     /// </summary>
-    /// <param name="configuration">The configuration of the host.</param>
+    /// <param name="services">The services of the built host (it is not started).</param>
     /// <returns>The settings of the window.</returns>
-    protected abstract DesktopWindowSettings GetWindowSettings( IConfiguration configuration );
+    protected abstract DesktopWindowSettings GetWindowSettings( IServiceProvider services );
 
     /// <summary>
     /// Registers what the window needs (a custom scheme, the handlers of messages of the page) before it is built. Does
@@ -136,7 +136,7 @@ public abstract class DesktopHostRunner : IAppHostRunner
     /// <inheritdoc />
     public int Run( IHost host )
     {
-        var settings = GetWindowSettings( host.Services.GetRequiredService<IConfiguration>() );
+        var settings = GetWindowSettings( host.Services );
         int exitCode = 0;
         Task? hostTask = null;
         void RunWindow()

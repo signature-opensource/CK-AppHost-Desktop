@@ -6,42 +6,44 @@ port opened: the endpoint of the party is in process and the window relays the r
 The App of the solution is a web application (its endpoint on a port, its client in a browser, the live reload of its
 dev server): being a desktop application is a packaging, applied by a deployment. The deployment adds
 [CK.Ng.AppHost.DesktopNgApp](../CK.Ng.AppHost.DesktopNgApp/README.md) to the App (it brings this package) and
-configures the "DesktopNgApp" aspect:
+enables the "DesktopNgApp" option of the "NgApp" feature of the client that the window shows:
 
 ```jsonc
 // Deployment/#Production/ckonf.json
 "Deployment": { "Apps": { "$Configurator": { "Packages": [ "CK.Ng.AppHost.DesktopNgApp" ] } } },
-"AppContexts": { "Configurator": { "App": { "Aspects": { "DesktopNgApp": { "Client": "App", "Title": "CK Configurator" } } } } }
+"AppContexts": { "Configurator": { "App": { "Local": { "PartyClient": { "App": { "NgApp": { "DesktopNgApp": { "Title": "CK Configurator" } } } } } } } }
 ```
 
 (See "The packages that a deployment adds to an App" in the README of
 [CK.AppDeployment](https://github.com/signature-opensource/CK-AppBuilder/blob/stable/CK.AppDeployment/README.md).)
 
-## The "DesktopNgApp" aspect
+## The "DesktopNgApp" option
 
-An optional App aspect (`DesktopNgAppAspect`), configured by `DesktopNgAppConfiguration`:
+An optional option of the "NgApp" client feature (`DesktopNgAppOption`, an `IPartyComponentOption<NgAppClientFeature>`):
+the client whose "NgApp" enables it is the one that the window shows. It requires the "Hosting" feature of the client
+(the endpoint of the party serves it). Its model, `DesktopNgAppConfiguration`:
 
 | Key | |
 |---|---|
-| `Client` | The client application that the window shows: a client of the App (`"Local:PartyClient:{Client}"`), served by the endpoint of the party ("Hosting"). Required. |
 | `Title` | The title of the window: the client name by default. |
 | `Width`, `Height` | The size of the window: 1280x800 by default. |
 
-The builder checks that the App declares the client, and projects the settings in the host's configuration (the root
-section `"DesktopNgApp"`: `DesktopNgAppAspect.SectionName`).
+The window shows one client: two clients of an App with the option are a build error. The build makes the endpoint of
+the party in process ([CK.AppHost.DesktopNgApp.Engine](../CK.AppHost.DesktopNgApp.Engine/README.md)).
 
 ## The runner
 
 `DesktopNgAppRunner` specializes the runner of [CK.AppHost.Desktop](../CK.AppHost.Desktop/README.md):
 
-- **The endpoint is in process:** `DesktopNgAppRunner.ConfigureHost` sets `"CK-AppIdentity:Local:HttpEndpoint:InProcess"`
-  to true (the "InProcess" option of
-  [CK.AppIdentity.HttpEndpoint.InProcess](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppIdentity.HttpEndpoint.InProcess/README.md)):
-  the web application of the party runs on an in-memory server, no port is opened, nothing outside the window can call
-  it. It is never written in a configuration: the packaging implies it.
+- **The window opens before the host starts**, with the title and the size of the option: they are read from the
+  configuration before the party is set up (`PartyClientFeatureDriver.TryFindOptionModels`, the option's model).
+- **The endpoint is in process** (the "InProcess" option of
+  [CK.AppIdentity.HttpEndpoint.InProcess](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppIdentity.HttpEndpoint.InProcess/README.md),
+  projected by the build): the web application of the party runs on an in-memory server, no port is opened, nothing
+  outside the window can call it.
 - **The window shows the client** at `app://localhost/` followed by the `RequestPath` of the client: the
-  `RunningHttpEndpoint.DefaultUrl` of the endpoint and the "Hosting" feature of the client. A missing client, a client
-  without "Hosting", an endpoint that is not in process are shown in the window.
+  `RunningHttpEndpoint.DefaultUrl` of the endpoint and the "Hosting" feature of the client. No client with the option,
+  an endpoint that is not in process are shown in the window.
 
 ## The in-process bridge
 

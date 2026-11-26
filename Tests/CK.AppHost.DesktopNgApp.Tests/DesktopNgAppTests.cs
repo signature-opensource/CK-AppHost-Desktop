@@ -3,8 +3,9 @@ using CK.AppIdentity;
 using CK.Core;
 using CK.Setup;
 using CK.Testing;
+using CK.TS.Angular;
 using CK.TypeScript;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Shouldly;
 using System;
@@ -19,52 +20,22 @@ namespace CK.AppHost.DesktopNgApp.Tests;
 [TestFixture]
 public class DesktopNgAppTests
 {
-    #region The aspect
+    #region The option
 
     static UserMessageCollector Collector() => new UserMessageCollector( new CurrentCultureInfo( new TranslationService(), NormalizedCultureInfo.CodeDefault ) );
 
     static DesktopNgAppConfiguration? Read( string json, UserMessageCollector collector )
     {
-        ConfigurationModelReader.TryRead<DesktopNgAppConfiguration>( ImmutableConfigurationSection.CreateFromJson( "Aspects", "DesktopNgApp", json ),
-                                                                     "Aspects:DesktopNgApp",
+        ConfigurationModelReader.TryRead<DesktopNgAppConfiguration>( ImmutableConfigurationSection.CreateFromJson( "NgApp", "DesktopNgApp", json ),
+                                                                     "NgApp:DesktopNgApp",
                                                                      collector,
                                                                      out var configuration );
         return configuration;
     }
 
-    static AppBuilderContext CreateContext( string app )
-    {
-        var engine = new EngineConfiguration();
-        var section = ImmutableConfigurationSection.CreateFromJson( "ckonf:Apps", "Sample", app );
-        return new AppBuilderContext( engine, [new AppConfiguration( "Sample", TestHelper.TestProjectFolder, TestHelper.TestProjectFolder, section, engine.FirstBinPath )] );
-    }
-
-    [Test]
-    public void the_aspect_projects_the_settings_of_the_window()
-    {
-        var context = CreateContext( """{ "Local": { "PartyClient": { "App": { "NgApp": true } } } }""" );
-        var aspect = new DesktopNgAppAspect( Read( """{ "Client": "App", "Width": 800 }""", Collector() ).ShouldNotBeNull() );
-        aspect.Apply( TestHelper.Monitor, context, context.Apps[0] ).ShouldBeTrue();
-        context.Apps[0].ProjectedValues.OrderBy( kv => kv.Key ).Select( kv => $"{kv.Key}={kv.Value}" )
-               .ShouldBe( ["DesktopNgApp:Client=App", "DesktopNgApp:Height=800", "DesktopNgApp:Title=App", "DesktopNgApp:Width=800"],
-                          "The title defaults to the client name, the height to 800." );
-    }
-
-    [Test]
-    public void the_client_must_be_a_client_of_the_App()
-    {
-        var context = CreateContext( """{ "Local": { "PartyClient": { "Other": { "NgApp": true } } } }""" );
-        var aspect = new DesktopNgAppAspect( Read( """{ "Client": "App" }""", Collector() ).ShouldNotBeNull() );
-        using( TestHelper.Monitor.CollectTexts( out var texts ) )
-        {
-            aspect.Apply( TestHelper.Monitor, context, context.Apps[0] ).ShouldBeFalse();
-            texts.ShouldContain( t => t.Contains( "the App has no \"Local:PartyClient:App\"" ) );
-        }
-    }
-
-    [TestCase( """{ "Title": "No client" }""" )]
-    [TestCase( """{ "Client": "App", "Width": 0 }""" )]
-    [TestCase( """{ "Client": "App", "Color": "Blue" }""" )]
+    [TestCase( """{ "Width": 0 }""" )]
+    [TestCase( """{ "Color": "Blue" }""" )]
+    [TestCase( """{ "Client": "App" }""" )]
     public void an_invalid_configuration_is_an_error( string json )
     {
         var collector = Collector();
@@ -72,16 +43,51 @@ public class DesktopNgAppTests
         collector.UserMessages.ShouldContain( m => m.Level == UserMessageLevel.Error );
     }
 
-    [Test]
-    public void the_runner_reads_the_projected_settings()
+    // The App builder: the AppIdentity contributor, then the DesktopNgApp one.
+    static (AppBuilderContext Context, bool Success) Contribute( string app )
     {
-        static IConfiguration C( params (string, string)[] values )
-            => new ConfigurationBuilder().AddInMemoryCollection( values.Select( v => new KeyValuePair<string, string?>( v.Item1, v.Item2 ) ) ).Build();
+        var engine = new EngineConfiguration();
+        var section = ImmutableConfigurationSection.CreateFromJson( "ckonf:Apps", "Sample", app );
+        var a = new AppConfiguration( "Sample", TestHelper.TestProjectFolder, TestHelper.TestProjectFolder, section, engine.FirstBinPath );
+        a.ConfigurableTypes = [typeof( NgAppClientFeature ), typeof( HostingClientFeature ), typeof( DesktopNgAppOption )];
+        var context = new AppBuilderContext( engine, [a] );
+        var appIdentity = new AppIdentityAppBuilderContributor();
+        var success = appIdentity.Contribute( TestHelper.Monitor, context );
+        success &= new DesktopNgAppAppBuilderContributor( appIdentity ).Contribute( TestHelper.Monitor, context );
+        return (context, success);
+    }
 
-        DesktopNgAppRunner.ReadSettings( C( ("DesktopNgApp:Client", "App"), ("DesktopNgApp:Title", "The title"), ("DesktopNgApp:Width", "800"), ("DesktopNgApp:Height", "600") ) )
-                          .ShouldBe( new DesktopWindowSettings( "The title", 800, 600 ) );
-        DesktopNgAppRunner.ReadSettings( C( ("DesktopNgApp:Client", "App") ) )
-                          .ShouldBe( new DesktopWindowSettings( "App", 1280, 800 ) );
+    [Test]
+    public void the_build_makes_the_endpoint_in_process()
+    {
+        var (context, success) = Contribute( """
+            { "FullName": "Sample/$Sample",
+              "Local": { "PartyClient": {
+                "App": { "NgApp": { "DesktopNgApp": { "Title": "The title" } }, "Hosting": true },
+                "Other": { "NgApp": true, "Hosting": true } } } }
+            """ );
+        success.ShouldBeTrue();
+        context.Apps[0].ProjectedValues.ShouldBe( [KeyValuePair.Create( DesktopNgAppAppBuilderContributor.InProcessPath, "true" )] );
+
+        (context, success) = Contribute( """{ "FullName": "Sample/$Sample", "Local": { "PartyClient": { "App": { "NgApp": true, "Hosting": true } } } }""" );
+        success.ShouldBeTrue();
+        context.Apps[0].ProjectedValues.ShouldBeEmpty( "No client enables the option: not a desktop application." );
+    }
+
+    [Test]
+    public void the_window_shows_one_client()
+    {
+        using( TestHelper.Monitor.CollectTexts( out var texts ) )
+        {
+            var (_, success) = Contribute( """
+                { "FullName": "Sample/$Sample",
+                  "Local": { "PartyClient": {
+                    "App": { "NgApp": { "DesktopNgApp": true }, "Hosting": true },
+                    "Other": { "NgApp": { "DesktopNgApp": true }, "Hosting": true } } } }
+                """ );
+            success.ShouldBeFalse();
+            texts.ShouldContain( t => t.Contains( "The clients 'App', 'Other' of App 'Sample' enable the \"DesktopNgApp\" option: the desktop window shows one client." ) );
+        }
     }
 
     [TestCase( "CK/$Configurator/#Production", "CK-Configurator" )]
@@ -93,38 +99,7 @@ public class DesktopNgAppTests
 
     #endregion
 
-    #region The url of the client
-
-    /// <summary>
-    /// A web build ("TestBuild") that stands for "NgApp" (CK.TS.Angular): the client application of the ClientDirectory.
-    /// </summary>
-    [PartyClientFeature( "TestBuild", TypeActivation.Optional )]
-    public sealed class TestBuildClientFeature : ClientFeature, IWebAppBuild
-    {
-        public TestBuildClientFeature( PartyClient client, ImmutableConfigurationSection configuration, ClientInfo info )
-            : base( client, configuration )
-        {
-            Info = info;
-        }
-
-        public ClientInfo Info { get; }
-
-        public NormalizedPath ProjectPath => Info.ProjectPath;
-
-        public NormalizedPath OutputPath => Info.OutputPath;
-
-        public System.Diagnostics.ProcessStartInfo GetDevServerStart( string yarnPath, int port ) => new( "node", $"\"{yarnPath}\" ng serve --port {port}" );
-    }
-
-    public sealed class TestBuildClientFeatureDriver : ClientFeatureDriver<TestBuildClientFeature>
-    {
-        readonly ClientDirectory _directory;
-
-        public TestBuildClientFeatureDriver( ClientDirectory directory ) => _directory = directory;
-
-        protected override TestBuildClientFeature? Create( IActivityMonitor monitor, PartyClient client, ImmutableConfigurationSection configuration )
-            => new( client, configuration, _directory.Clients.Single( c => c.Name == client.Name ) );
-    }
+    #region The window and the url of its client
 
     static IStObjMap? _map;
 
@@ -143,8 +118,9 @@ public class DesktopNgAppTests
                                                   typeof( PartyClientFeatureDriver ),
                                                   typeof( HostingClientFeature ),
                                                   typeof( HostingClientFeatureDriver ),
-                                                  typeof( TestBuildClientFeature ),
-                                                  typeof( TestBuildClientFeatureDriver ),
+                                                  typeof( NgAppClientFeature ),
+                                                  typeof( NgAppClientFeatureDriver ),
+                                                  typeof( DesktopNgAppOption ),
                                                   typeof( DesktopNgAppRunner ) );
             configuration.EnsureAspect<TypeScriptAspectConfiguration>();
             var app = configuration.FirstBinPath.EnsureAspect<TypeScriptBinPathAspectConfiguration>();
@@ -175,21 +151,21 @@ public class DesktopNgAppTests
         }
     }
 
-    // Both clients are declared (web build and hosting); "DesktopNgApp:Client" is the projection of the aspect.
-    static async Task<RunningAspNetServer> CreateHostAsync( string? client )
+    // Both clients are declared (web build and hosting); the option is enabled on the given clients.
+    static void Declare( MutableConfigurationSection c, params string[] desktop )
     {
-        return await (await GetMapAsync()).CreateRunningAspNetServerAsync( identity: c =>
+        foreach( var name in new[] { "App", "MiniApp" } )
         {
-            foreach( var name in new[] { "App", "MiniApp" } )
-            {
-                c[$"Local:PartyClient:{name}:TestBuild"] = "true";
-                c[$"Local:PartyClient:{name}:Hosting"] = "true";
-            }
-        }, configureHost: b =>
-        {
-            b.Environment.EnvironmentName = "Production";
-            if( client != null ) b.Configuration.AddInMemoryCollection( [new KeyValuePair<string, string?>( "DesktopNgApp:Client", client )] );
-        } );
+            if( desktop.Contains( name ) ) c[$"Local:PartyClient:{name}:NgApp:DesktopNgApp:Title"] = $"The {name}";
+            else c[$"Local:PartyClient:{name}:NgApp"] = "true";
+            c[$"Local:PartyClient:{name}:Hosting"] = "true";
+        }
+    }
+
+    static async Task<RunningAspNetServer> CreateHostAsync( params string[] desktop )
+    {
+        return await (await GetMapAsync()).CreateRunningAspNetServerAsync( identity: c => Declare( c, desktop ),
+                                                                           configureHost: b => b.Environment.EnvironmentName = "Production" );
     }
 
     [Test]
@@ -204,6 +180,22 @@ public class DesktopNgAppTests
     }
 
     [Test]
+    public async Task the_window_settings_are_read_before_the_host_starts_Async()
+    {
+        var map = await GetMapAsync();
+        await using var services = map.CreateAutomaticServices( s =>
+        {
+            s.AddSingleton( ApplicationIdentityServiceConfiguration.Create( TestHelper.Monitor, c =>
+            {
+                c["FullName"] = "Sample/$Desktop";
+                Declare( c, "MiniApp" );
+                c["Local:PartyClient:MiniApp:NgApp:DesktopNgApp:Width"] = "640";
+            } ).ShouldNotBeNull() );
+        } );
+        DesktopNgAppRunner.ReadSettings( TestHelper.Monitor, services.Services ).ShouldBe( new DesktopWindowSettings( "The MiniApp", 640, 800 ) );
+    }
+
+    [Test]
     public async Task the_window_shows_its_client_where_the_endpoint_serves_it_Async()
     {
         await using var server = await CreateHostAsync( "MiniApp" );
@@ -212,13 +204,19 @@ public class DesktopNgAppTests
         (await (await server.Client.GetAsync( new Uri( url ).AbsolutePath )).Content.ReadAsStringAsync()).ShouldBe( "MiniApp" );
     }
 
-    [TestCase( null, "No \"DesktopNgApp:Client\" in the configuration" )]
-    [TestCase( "Nope", "The client 'Nope' that the desktop window shows is not a client of the party." )]
-    public async Task without_its_client_the_window_shows_a_failure_Async( string? client, string message )
+    [Test]
+    public async Task without_its_client_the_window_shows_a_failure_Async()
     {
-        await using var server = await CreateHostAsync( client );
-        DesktopNgAppRunner.GetClientUrl( server.Services, out var url ).ShouldNotBeNull().ShouldStartWith( message );
-        url.ShouldBeNull();
+        await using( var server = await CreateHostAsync() )
+        {
+            DesktopNgAppRunner.GetClientUrl( server.Services, out var url ).ShouldNotBeNull().ShouldStartWith( "No client of the party enables the \"DesktopNgApp\" option" );
+            url.ShouldBeNull();
+        }
+        await using( var server = await CreateHostAsync( "App", "MiniApp" ) )
+        {
+            DesktopNgAppRunner.GetClientUrl( server.Services, out var url ).ShouldNotBeNull().ShouldStartWith( "The clients 'App', 'MiniApp' enable the \"DesktopNgApp\" option" );
+            url.ShouldBeNull();
+        }
     }
 
     #endregion

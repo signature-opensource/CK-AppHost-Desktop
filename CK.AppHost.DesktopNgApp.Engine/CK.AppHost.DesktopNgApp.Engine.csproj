@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The App builder contributor reads the declared clients and their options. -->
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.4.ci.197" />
+    <ProjectReference Include="..\CK.AppHost.DesktopNgApp\CK.AppHost.DesktopNgApp.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="CK.AppHost.DesktopNgApp.Tests" />
+  </ItemGroup>
+</Project>

@@ -4,7 +4,7 @@ The Angular side of a desktop application whose window shows an Angular client o
 CK.IO.AppHost.Desktop, the component that sends them, and the axios instance that talks to the in-process endpoint.
 
 **This is the package that a deployment adds to an App** to make it a desktop application: it references its back-end,
-[CK.AppHost.DesktopNgApp](../CK.AppHost.DesktopNgApp/README.md) (the "DesktopNgApp" aspect, the runner, the handlers of
+[CK.AppHost.DesktopNgApp](../CK.AppHost.DesktopNgApp/README.md) (the "DesktopNgApp" option of "NgApp", the runner, the handlers of
 the commands), that brings [CK.AppHost.Desktop](../CK.AppHost.Desktop/README.md).
 
 ## `ck-desktop-log-links`

@@ -18,7 +18,7 @@ A specialization says what the window shows:
 
 | Member | What it does |
 |---|---|
-| `DesktopHostRunner.GetWindowSettings` | The title and the size of the window (`DesktopWindowSettings`), read from the configuration before the host starts: the window opens at once. |
+| `DesktopHostRunner.GetWindowSettings` | The title and the size of the window (`DesktopWindowSettings`), from the services of the built host before it starts: the window opens at once. |
 | `DesktopHostRunner.ConfigureWindow` | Registers what the window needs before it is built (a custom scheme, the handlers of the messages of its page). |
 | `DesktopHostRunner.LoadAsync` | Loads the content once the host is started (`DesktopHostRunner.LoadWhenReadyAsync`, `DesktopHostRunner.Load`), or returns the message of a failure. |
 | `DesktopHostRunner.ConfigureHost` | Configures the builder of the host (the base sets the folder of the logs: an override calls it). |

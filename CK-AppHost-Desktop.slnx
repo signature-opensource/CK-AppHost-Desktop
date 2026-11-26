@@ -4,6 +4,7 @@
   </Folder>
   <Project Path="CK.AppHost.Desktop/CK.AppHost.Desktop.csproj" />
   <Project Path="CK.AppHost.DesktopNgApp/CK.AppHost.DesktopNgApp.csproj" />
+  <Project Path="CK.AppHost.DesktopNgApp.Engine/CK.AppHost.DesktopNgApp.Engine.csproj" />
   <Project Path="CK.IO.AppHost.Desktop/CK.IO.AppHost.Desktop.csproj" />
   <Project Path="CK.Ng.AppHost.DesktopNgApp/CK.Ng.AppHost.DesktopNgApp.csproj" />
 </Solution>

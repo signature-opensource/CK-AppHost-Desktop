@@ -8,7 +8,7 @@ using CK.TypeScript;
 namespace CK.Ng.AppHost.DesktopNgApp;
 
 /// <summary>
-/// The client side of a desktop application whose window shows an Angular client (the "DesktopNgApp" aspect of
+/// The client side of a desktop application whose window shows an Angular client (the "DesktopNgApp" option of
 /// CK.AppHost.DesktopNgApp, that it brings: a deployment adds this package to the App): the links of the desktop
 /// (<see cref="DesktopLogLinksComponent"/>) and the commands they send (CK.IO.AppHost.Desktop, handled by
 /// CK.AppHost.DesktopNgApp).

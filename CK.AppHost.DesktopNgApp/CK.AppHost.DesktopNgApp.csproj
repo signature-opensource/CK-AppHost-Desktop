@@ -8,7 +8,9 @@
     <PackageReference Include="CK.AppIdentity.HttpEndpoint.InProcess" Version="25.0.0-0.uc.4.ci.86" />
     <!-- The "Hosting" feature of a client: the window shows the client that the endpoint serves. -->
     <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.1-0.uc.4.ci.144" />
-    <!-- The model of the "DesktopNgApp" aspect. -->
+    <!-- The "NgApp" feature of a client: the "DesktopNgApp" option is one of its options. -->
+    <PackageReference Include="CK.TS.Angular" Version="3.0.1-0.uc.4.ci.128" />
+    <!-- The model of the "DesktopNgApp" option. -->
     <PackageReference Include="CK.ConfigurationModel" Version="0.0.0-0.uc.2.ci.24" />
   </ItemGroup>
   <ItemGroup>
