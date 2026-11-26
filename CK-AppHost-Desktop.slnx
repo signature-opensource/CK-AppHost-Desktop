@@ -1,2 +1,8 @@
 <Solution>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/CK.AppHost.Desktop.Tests/CK.AppHost.Desktop.Tests.csproj" />
+  </Folder>
+  <Project Path="CK.AppHost.Desktop/CK.AppHost.Desktop.csproj" />
+  <Project Path="CK.IO.AppHost.Desktop/CK.IO.AppHost.Desktop.csproj" />
+  <Project Path="CK.Ng.AppHost.Desktop/CK.Ng.AppHost.Desktop.csproj" />
 </Solution>
