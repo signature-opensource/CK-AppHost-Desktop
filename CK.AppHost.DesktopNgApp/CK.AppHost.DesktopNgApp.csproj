@@ -5,9 +5,9 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The in-process endpoint ("InProcess" option): the window relays the requests of its page, no port is opened. -->
-    <PackageReference Include="CK.AppIdentity.HttpEndpoint.InProcess" Version="25.0.0-0.uc.4.ci.82" />
+    <PackageReference Include="CK.AppIdentity.HttpEndpoint.InProcess" Version="25.0.0-0.uc.4.ci.85" />
     <!-- The "Hosting" feature of a client: the window shows the client that the endpoint serves. -->
-    <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.1-0.uc.4.ci.142" />
+    <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.1-0.uc.4.ci.143" />
     <!-- The model of the "DesktopNgApp" aspect. -->
     <PackageReference Include="CK.ConfigurationModel" Version="0.0.0-0.uc.2.ci.24" />
   </ItemGroup>
