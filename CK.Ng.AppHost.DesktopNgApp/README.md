@@ -20,6 +20,18 @@ The component asks the backend first (`IGetDesktopInfoQCommand`): it shows nothi
 or no text log, and when the backend doesn't handle the command. An error of a link is shown as the title of the links
 (they turn red).
 
+It is a named component (`INgNamedComponent` of CK.TS.Angular): the shell of an application that is also run without
+this package (in a browser, in Development) doesn't import it, it loads it by its name when the package is there:
+
+```ts
+import { NgComponentOutlet } from '@angular/common';
+import { resolveNamedComponentTypeAsync } from '@local/ck-gen';
+
+readonly desktopLinks = signal<Type<unknown> | undefined>( undefined );
+constructor() { resolveNamedComponentTypeAsync( 'desktop-log-links' )?.then( t => this.desktopLinks.set( t ) ); }
+// <ng-container *ngComponentOutlet="desktopLinks()" />
+```
+
 ## The requests of a page without port
 
 The package provides the axios instance of the application (the `AXIOS` token of CK.Ng.Axios: its provider comes after
