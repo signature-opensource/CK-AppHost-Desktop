@@ -27,7 +27,7 @@ this package (in a browser, in Development) doesn't import it, it loads it by it
 import { NgComponentOutlet } from '@angular/common';
 import { resolveNamedComponentTypeAsync } from '@local/ck-gen';
 
-readonly desktopLinks = signal<Type<unknown> | undefined>( undefined );
+readonly desktopLinks = signal<Type<unknown> | null>( null );   // NgComponentOutlet renders nothing for null.
 constructor() { resolveNamedComponentTypeAsync( 'desktop-log-links' )?.then( t => this.desktopLinks.set( t ) ); }
 // <ng-container *ngComponentOutlet="desktopLinks()" />
 ```
