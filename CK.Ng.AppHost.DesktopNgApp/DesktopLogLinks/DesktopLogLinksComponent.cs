@@ -1,7 +1,7 @@
 using CK.Core;
 using CK.TS.Angular;
 
-namespace CK.Ng.AppHost.Desktop;
+namespace CK.Ng.AppHost.DesktopNgApp;
 
 /// <summary>
 /// The "Last log" and "Open folder" links of a desktop application (<c>ck-desktop-log-links</c>): shown only when the
@@ -9,7 +9,7 @@ namespace CK.Ng.AppHost.Desktop;
 /// "Open folder" opens the folder of the text logs.
 /// </summary>
 [NgComponent]
-[Package<NgAppHostDesktopPackage>]
+[Package<NgAppHostDesktopNgAppPackage>]
 public sealed class DesktopLogLinksComponent : NgComponent
 {
 }

@@ -1,4 +1,3 @@
-using CK.AppIdentity;
 using CK.Core;
 using CK.Cris;
 using CK.IO.AppHost.Desktop;
@@ -10,23 +9,24 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CK.AppHost.Desktop;
+namespace CK.AppHost.DesktopNgApp;
 
 /// <summary>
-/// The handlers of the commands of a desktop application (CK.IO.AppHost.Desktop): the desktop information, the last log
-/// and the log folder.
+/// The handlers of the commands of a desktop application (CK.IO.AppHost.Desktop): the desktop information, the last log,
+/// the log folder and the folder dialog.
 /// </summary>
 public sealed class DesktopCommandHandlers : ISingletonAutoService
 {
-    readonly ApplicationIdentityService _root;
+    readonly DesktopNgAppRunner _runner;
 
     /// <summary>
     /// Initializes the handlers.
     /// </summary>
-    /// <param name="root">The application identity service: whether a client of the root party has the window.</param>
-    public DesktopCommandHandlers( ApplicationIdentityService root ) => _root = root;
+    /// <param name="runner">The runner of the desktop application: its window.</param>
+    public DesktopCommandHandlers( DesktopNgAppRunner runner ) => _runner = runner;
 
-    bool HasWindow => _root.GetFeature<PartyClientFeature>()?.Clients.Any( c => c.GetFeature<DesktopWindowClientFeature>() != null ) ?? false;
+    // The host runs with its window (a host built without being run by the runner, a test, has none).
+    bool HasWindow => _runner.Window != null;
 
     /// <summary>
     /// Handles <see cref="IGetDesktopInfoQCommand"/>.
@@ -55,7 +55,7 @@ public sealed class DesktopCommandHandlers : ISingletonAutoService
     [CommandHandler]
     public async Task<string?> HandleAsync( IPickFolderCommand command )
     {
-        var window = CKomposableDesktopHost.Window ?? throw new CKException( "The application has no window: there is no folder dialog." );
+        var window = _runner.Window ?? throw new CKException( "The application has no window: there is no folder dialog." );
         var folders = await window.Features.FilePickerDialogs.ShowOpenFolderAsync( command.Title ?? "", command.Folder ?? "", false, default ).ConfigureAwait( false );
         return folders?.FirstOrDefault( f => !string.IsNullOrEmpty( f ) );
     }

@@ -1,4 +1,5 @@
 using CK.AppIdentity;
+using CK.Core;
 using InfiniFrame;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
@@ -13,7 +14,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CK.Core;
+namespace CK.AppHost.DesktopNgApp;
 
 /// <summary>
 /// The bridge between the desktop window and an in-process endpoint (the "InProcess" option of the HttpEndpoint,
@@ -24,7 +25,7 @@ namespace CK.Core;
 ///   authority: "app://localhost") serves the GET requests of the page (its files): they are sent to the in-process server.
 ///   </item>
 ///   <item>
-///   The other requests of the page (its API: Cris) are messages: the axios adapter of CK.Ng.AppHost.Desktop posts
+///   The other requests of the page (its API: Cris) are messages: the axios adapter of CK.Ng.AppHost.DesktopNgApp posts
 ///   <c>{ id, method, url, headers, body }</c> with the envelope id <see cref="MessageId"/>, the bridge answers
 ///   <c>{ id, status, headers, body, base64 }</c> with the same envelope id.
 ///   </item>

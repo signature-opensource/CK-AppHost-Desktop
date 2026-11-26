@@ -1,0 +1,12 @@
+<Project>
+
+  <!--
+    A desktop application has no console (its logs are files): the host that has this package (through its App) is a
+    WinExe. Only a host project: CK.AppHost sets CKIsAppHost in it (a Builder that references the same App keeps its
+    console). Imported before the targets of the SDK use the OutputType.
+  -->
+  <PropertyGroup Condition=" '$(CKIsAppHost)' == 'true' And '$(OutputType)' == 'Exe' ">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+</Project>

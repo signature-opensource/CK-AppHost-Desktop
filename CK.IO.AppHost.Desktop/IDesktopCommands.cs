@@ -17,8 +17,8 @@ public interface IGetDesktopInfoQCommand : ICommand<IDesktopInfo>
 public interface IDesktopInfo : IPoco
 {
     /// <summary>
-    /// Gets or sets whether the application runs with its window (a client of its root party has the "DesktopWindow"
-    /// feature). The other commands of the desktop fail otherwise: a server never opens files on its machine.
+    /// Gets or sets whether the application runs with its window (its host is run by the runner of a desktop
+    /// application). The other commands of the desktop fail otherwise: a server never opens files on its machine.
     /// </summary>
     bool HasWindow { get; set; }
 

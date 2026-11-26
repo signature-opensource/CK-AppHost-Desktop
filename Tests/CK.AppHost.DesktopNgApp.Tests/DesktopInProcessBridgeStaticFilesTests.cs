@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CK.Testing.MonitorTestHelper;
 
-namespace CK.AppHost.Desktop.Tests;
+namespace CK.AppHost.DesktopNgApp.Tests;
 
 /// <summary>
 /// The client application of a published host is served from its files (CK.TS.AspNet.Clients: default files, static

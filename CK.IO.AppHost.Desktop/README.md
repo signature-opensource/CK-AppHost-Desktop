@@ -1,7 +1,7 @@
 # CK.IO.AppHost.Desktop
 
-The commands of a desktop application: the contract between its client (CK.Ng.AppHost.Desktop) and its host
-(CK.AppHost.Desktop, that handles them).
+The commands of a desktop application: the contract between its client (CK.Ng.AppHost.DesktopNgApp) and its host
+(CK.AppHost.DesktopNgApp, that handles them).
 
 | Command | Result | What it does |
 |---|---|---|
@@ -12,5 +12,5 @@ The commands of a desktop application: the contract between its client (CK.Ng.Ap
 
 The two "open" commands fail when the application has no window: a server never opens files on its machine.
 
-Like every command of the local endpoint, they can be sent by any process of the machine (the endpoint has no
-authentication): see "The installed application" in the README of CK.AppHost.Desktop.
+The endpoint of a desktop application is in process (no port): only the page of its window sends these commands (see
+"The in-process bridge" in the README of CK.AppHost.DesktopNgApp).

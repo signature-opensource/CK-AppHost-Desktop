@@ -1,8 +1,9 @@
 <Solution>
   <Folder Name="/Tests/">
-    <Project Path="Tests/CK.AppHost.Desktop.Tests/CK.AppHost.Desktop.Tests.csproj" />
+    <Project Path="Tests/CK.AppHost.DesktopNgApp.Tests/CK.AppHost.DesktopNgApp.Tests.csproj" />
   </Folder>
   <Project Path="CK.AppHost.Desktop/CK.AppHost.Desktop.csproj" />
+  <Project Path="CK.AppHost.DesktopNgApp/CK.AppHost.DesktopNgApp.csproj" />
   <Project Path="CK.IO.AppHost.Desktop/CK.IO.AppHost.Desktop.csproj" />
-  <Project Path="CK.Ng.AppHost.Desktop/CK.Ng.AppHost.Desktop.csproj" />
+  <Project Path="CK.Ng.AppHost.DesktopNgApp/CK.Ng.AppHost.DesktopNgApp.csproj" />
 </Solution>

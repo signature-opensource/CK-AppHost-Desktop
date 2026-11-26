@@ -6,6 +6,7 @@
     <PackageReference Include="CK.Ng.Cris.AspNet" Version="3.0.0-0.uc.4.ci.215" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CK.IO.AppHost.Desktop\CK.IO.AppHost.Desktop.csproj" />
+    <!-- The back-end: a deployment adds this package only, it brings the runner and the "DesktopNgApp" aspect. -->
+    <ProjectReference Include="..\CK.AppHost.DesktopNgApp\CK.AppHost.DesktopNgApp.csproj" />
   </ItemGroup>
 </Project>
