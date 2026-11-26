@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.Testing.Engine" Version="37.0.0-0.uc.4.ci.74" />
-    <PackageReference Include="CK.Testing.Engine.HttpEndpoint" Version="25.0.0-0.uc.4.ci.85" />
+    <PackageReference Include="CK.Testing.Engine.HttpEndpoint" Version="25.0.0-0.uc.4.ci.86" />
     <PackageReference Include="CK.Testing.Engine.TypeScript" Version="4.0.0-0.uc.4.ci.70" />
     <PackageReference Include="CK.Testing.Nunit" Version="18.0.0-0.uc.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" PrivateAssets="all" />
