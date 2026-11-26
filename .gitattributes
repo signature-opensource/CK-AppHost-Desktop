@@ -1,0 +1,26 @@
+# CKli convention: every text file is UTF-8 WITHOUT a BOM and is checked out with the line endings
+# of the platform: CRLF on Windows, LF everywhere else.
+#
+# "text=auto" makes git store LF in the repository and write the newline of the platform in the
+# working folder. That newline depends on the "core.autocrlf" and "core.eol" settings of the
+# machine: "ckli issue" reports the settings that give the wrong one.
+#
+# Consequence: a multi-line C# string literal has the newline of the machine that compiles it.
+# Code and tests must not depend on it.
+#
+# Git cannot express the "no BOM" half of the convention: that one stays a review rule.
+* text=auto
+
+# Fixed line endings, on every platform: the program that reads these files accepts only one.
+# A shell fails on a CRLF script.
+*.sh text eol=lf
+# cmd.exe can miss the labels of an LF script.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary content: never convert, never diff.
+*.png binary
+*.zip binary
+*.nupkg binary
+*.ico binary
+*.snk binary
