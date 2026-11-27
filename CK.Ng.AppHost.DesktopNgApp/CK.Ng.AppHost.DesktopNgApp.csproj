@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.Ng.Cris.AspNet" Version="3.0.0-0.uc.4.ci.218" />
+    <PackageReference Include="CK.Ng.Cris.AspNet" Version="3.0.0-0.uc.4.ci.221" />
   </ItemGroup>
   <ItemGroup>
     <!-- The back-end: a deployment adds this package only, it brings the runner and the "DesktopNgApp" aspect. -->
