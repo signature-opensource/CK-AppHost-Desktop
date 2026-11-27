@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- IAppHostRunner: its code only, its build targets are the conventions of a host project. -->
-    <PackageReference Include="CK.AppHost" Version="25.0.0-0.uc.4.ci.89" ExcludeAssets="build" />
+    <PackageReference Include="CK.AppHost" Version="25.0.0-0.uc.4.ci.91" ExcludeAssets="build" />
     <PackageReference Include="InfiniLore.InfiniFrame" Version="0.62.1" />
   </ItemGroup>
   <ItemGroup>
